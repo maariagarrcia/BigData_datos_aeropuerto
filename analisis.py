@@ -5,8 +5,6 @@
 import dask.dataframe as dd
 from colorama import Fore
 
-# vamos a cargar los datos
-#df = dd.read_csv('/Users/mariagarcia/Documents/BigData_datos_aeropuerto/air_traffic_data.csv')
 
 #VAMPOS A CARGAR LOS  DATOOS EN UNA FUNCION
 def cargar_datos():
@@ -14,6 +12,11 @@ def cargar_datos():
     return df
 
 def analizar_datos(df):
+    # numero de filas y columnas
+    print(Fore.LIGHTMAGENTA_EX+"·CARACTERÍSTICAS DE LOS DATOS·"+Fore.WHITE)
+    print(df.shape)
+    print()
+
     # vamos a ver los datos por columnas que tenemos
     print(Fore.LIGHTMAGENTA_EX + "·DATOS POR COLUMNAS·" + Fore.WHITE)
     print(df.columns)
@@ -25,13 +28,11 @@ def analizar_datos(df):
     print()
 
     # ahora separaremos los datos dependiendo de su tipo
-    #datos numericos
     df_num = df.select_dtypes(include=['int64','float64'])
-    # vamos a separar los datos categoricos
     df_cat = df.select_dtypes(include=['object'])
 
     # vamos a ver los datos numericos
-    print(Fore.LIGHTMAGENTA_EX+"·DATOS NUMÉRICS·"+Fore.WHITE)
+    print(Fore.LIGHTMAGENTA_EX+"·DATOS NUMÉRICOS·"+Fore.WHITE)
     print(df_num.head())
     print()
     # vamos a ver los datos categoricos
