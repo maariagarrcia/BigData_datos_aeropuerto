@@ -7,7 +7,8 @@ import seaborn as sns
 import dask.dataframe as dd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, classification_report, confusion_matrix,roc_curve, roc_auc_score, auc
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, classification_report, confusion_matrix
+
 
 #from analisis_POO import *
 
@@ -170,7 +171,13 @@ class RegressionModel:
         self.confusion_matrix()
 
 
+
 # Instanciar el objeto RegressionModel
 model = RegressionModel('/Users/mariagarcia/Documents/BigData_datos_aeropuerto/dataset_limpiado.csv')
 model.modelo_regresion()
+
+
+
+
+
 
