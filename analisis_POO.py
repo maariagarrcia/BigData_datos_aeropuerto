@@ -4,6 +4,12 @@ from matplotlib import pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
 
+import dask.dataframe as dd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+
 # Data Cleaning ---> Este proceso ayuda a obtener resultados confiables de los datos,
 # identificando y corrigiendo errores en los datos.
 
@@ -66,6 +72,7 @@ class AnalizarDatos:
             self.df[col] = self.df[col].map(mapping)
         
         print(self.df.dtypes)
+        #print(self.df.head())
 
     def save_dataset(self, output_file):
         self.df.to_csv(output_file, index=False, single_file=True)
@@ -74,6 +81,18 @@ class AnalizarDatos:
         print(Fore.LIGHTMAGENTA_EX + "· COMPAÑÍAS ·" + Fore.WHITE)
         print(self.df['Operating Airline'].unique().compute())
         print()
+
+        #el gráfico de recuento muestra la cantidad de veces que aparece cada compañía operadora en el conjunto de datos. 
+        # en el eje x no va asalie el nombre de las compañias porque hemos convertido los datos categoricos a numericos
+        # pero antes de la conversion se veia que la compañia que mas vuelos tenia era United Airlines - Pre 07/01/2013
+        # Countplot de las compañías operadoras
+        sns.set(style="darkgrid")
+        plt.figure(figsize=(12, 6))
+        plt.xticks(rotation=90)
+        plt.title("Compañías Operadoras")
+              
+        sns.countplot(data=self.df.compute(), x='Operating Airline')
+        plt.show()
 
     def MediaPasajeros(self):
         # ¿Cuántos pasajeros tienen de media los vuelos de cada compañía?
@@ -122,27 +141,6 @@ class AnalizarDatos:
         print()
         print("En resumen, la media y la desviación estándar proporcionan una medida de tendencia central y una medida de dispersión de los datos respectivamente. Estos valores sugieren que hay una variabilidad considerable en la cantidad de pasajeros registrados y ajustados en los períodos de actividad, y que los ajustes realizados no parecen tener un impacto significativo en esta variabilidad.")
         
-    def diagramas(self):
-        # podriamos hacer un diagrama de barras para ver la cantidad de pasajeros por compañia
-        print(Fore.CYAN+"1."+Fore.WHITE+" Diagrama de barras para ver la cantidad de pasajeros por compañia")
-        print()
-        # agrupamos por compañia y sumamos los pasajeros
-        pasajeros_compañia = self.df.groupby('Operating Airline')[
-            'Adjusted Passenger Count'].sum().compute()
-
-
-        # ordenamos de mayor a menor
-        #pasajeros_compañia = pasajeros_compañia.sort_values(ascending=False)
-        # creamos el diagrama de barras
-        pasajeros_compañia.plot(kind='bar', figsize=(12,7.5), color='green', fontsize=11)
-
-        plt.title('Cantidad de pasajeros por compañia')
-        plt.xlabel('Compañia')
-        plt.ylabel('Pasajeros')
-
-        plt.show()
-        print("En el diagrama de barras se ve que la compañia que mas pasajeros tiene es United Airlines - Pre 07/01/2013 que destaca por encima de las demas compañias.")
-
     def eliminar_nulos(self):
         # vamos a ver el total de nulos
         print(Fore.LIGHTMAGENTA_EX + "· TOTAL DE NULOS ·" + Fore.WHITE)
@@ -171,8 +169,7 @@ class AnalizarDatos:
 
         self.df = self.df.fillna('null')
         print(self.df.isnull().sum().compute())
-
-
+  
     #Una vez esto haremos un análisis de la correlación cuyo resultado debe ser una matriz de correlación de datos que represente de qué manera están relacionadas las diferentes variables. Pa
     def correlacion(self):
         print(Fore.LIGHTMAGENTA_EX + "· MATRIZ DE CORRELACIÓN ·" + Fore.WHITE)
@@ -190,34 +187,73 @@ class AnalizarDatos:
         plt.title('Matriz de correlación')
         plt.show()
 
-        
+    def remove_highly_correlated_columns(self, threshold=0.5):
+        correlation_matrix = self.df.corr().compute()
+
+        columns_to_remove = set()
+
+        for i, column in enumerate(correlation_matrix.columns):
+            correlated_columns = correlation_matrix.columns[i+1:]
+            high_correlations = correlation_matrix[column][correlated_columns].abs() >= threshold
+
+            for correlated_column in high_correlations[high_correlations].index:
+                columns_to_remove.add(correlated_column)
+
+        self.df = self.df.drop(columns=list(columns_to_remove))
+
+        # comprobamos que se han eliminado las columnas
+        print(Fore.LIGHTMAGENTA_EX + "· COLUMNAS ELIMINADAS ·" + Fore.WHITE)
+        print(columns_to_remove)
+
+    def modelo_regresion(self):
+
+        # Seleccionar las columnas relevantes para el modelo
+        df = self.df[['Month', 'Passenger Count']]
+
+        # Convertir el dataframe Dask a pandas dataframe
+        df = df.compute()
+
+        # Dividir los datos en conjunto de entrenamiento y prueba
+        X_train, X_test, y_train, y_test = train_test_split(df['Month'], df['Passenger Count'], test_size=0.2, random_state=42)
+
+        # Crear el modelo de regresión lineal
+        model = LinearRegression()
+
+        # Ajustar el modelo a los datos de entrenamiento
+        model.fit(X_train.values.reshape(-1, 1), y_train)
+
+        # Realizar predicciones en el conjunto de prueba
+        y_pred = model.predict(X_test.values.reshape(-1, 1))
+
+        # Calcular el error cuadrático medio en el conjunto de prueba
+        mse = mean_squared_error(y_test, y_pred)
+
+        print("Error cuadrático medio:", mse)
+
     def show(self):
-        pass
+        #analisis.dtypes()
+        analisis.convert_categorical_to_numeric()
+
+        # Guardar el dataset modificado
+        output_file = 'datos_modificados.csv'
+        analisis.save_dataset(output_file)
+        #analisis.OperatingAirlines()
+        #analisis.MediaPasajeros()
+        #analisis.EliminarDuplicados()
+        #analisis.nuevo_csv()
+        #analisis.calculos_descriptivos()
+        #analisis.eliminar_nulos()
+        #analisis.correlacion()
+        analisis.remove_highly_correlated_columns()
+        # comprobar que se han eliminado las columnas  con la correlacion 
+        #analisis.correlacion()
+        #analisis.modelo_regresion()
+        output_file= "dataset_limpiado.csv"
+        analisis.save_dataset(output_file)
 
 
-
-
-
-# algunos diagramas de cajas para ver los outliers. 
-# podriamos hacer un diagrama de barras para ver la cantidad de pasajeros por compañia ---> para ver si hay alguna compañia que destaca por encima de las demas  ---> en el diagrama de barras se ve que la compañia que mas pasajeros tiene es United Airlines  
-# por lo tanto
-
-       
-     
-
+      
+# Ruta del DataFrame
 file_path = '/Users/mariagarcia/Documents/BigData_datos_aeropuerto/air_traffic_data.csv'
 analisis = AnalizarDatos(file_path)
-analisis.dtypes()
-analisis.convert_categorical_to_numeric()
-# Guardar el dataset modificado
-output_file = 'datos_modificados.csv'
-analisis.save_dataset(output_file)
-analisis.OperatingAirlines()
-analisis.MediaPasajeros()
-analisis.EliminarDuplicados()
-analisis.nuevo_csv()
-analisis.calculos_descriptivos()
-analisis.diagramas()
-analisis.eliminar_nulos()
-analisis.correlacion()
-
+analisis.show()
