@@ -1,3 +1,4 @@
+#### I M P O R T S ####
 from dask import dataframe as dd
 from colorama import Fore
 from matplotlib import pyplot as plt
@@ -16,8 +17,7 @@ from sklearn.metrics import mean_squared_error
 # Como podemos oobservar tenemos un dataset de un conjunto de datos sobre el tráfico en el aeropuerto
 # de San Francisco.
 
-
-
+#### C L A S S ####
 
 class AnalizarDatos:
     def __init__(self, file_path):
@@ -177,9 +177,9 @@ class AnalizarDatos:
         print(correlation_matrix)
         print()
 
-        print(Fore.CYAN+"1."+Fore.WHITE+" La correlación entre  columnas que es de aproximadamente 0.999, indica que las dos variables están altamente correlacionadas.")
-        print("Esto sugiere que los ajustes realizados no tienen un impacto significativo en la cantidad de pasajeros registrados.")
-        print("Los que son menos de 0.5 no estan correlacionados entre si")
+        print(Fore.CYAN+"1."+Fore.WHITE+" Si la correlación entre  columnas que es de aproximadamente 0.999, indica que las dos variables están altamente correlacionadas.")
+        print(Fore.CYAN+"2."+Fore.WHITE+"Los que son menos de 0.5 no estan correlacionados entre si")
+        print(Fore.CYAN+"3."+Fore.WHITE+"Es  decir, que si dos columnas tienen una correlación de 0.999, podemos eliminar una de ellas sin perder información ya que ambas columnas son casi idénticas.")
         print()
 
         plt.figure(figsize=(10,8))
@@ -205,31 +205,6 @@ class AnalizarDatos:
         print(Fore.LIGHTMAGENTA_EX + "· COLUMNAS ELIMINADAS ·" + Fore.WHITE)
         print(columns_to_remove)
 
-    def modelo_regresion(self):
-
-        # Seleccionar las columnas relevantes para el modelo
-        df = self.df[['Month', 'Passenger Count']]
-
-        # Convertir el dataframe Dask a pandas dataframe
-        df = df.compute()
-
-        # Dividir los datos en conjunto de entrenamiento y prueba
-        X_train, X_test, y_train, y_test = train_test_split(df['Month'], df['Passenger Count'], test_size=0.2, random_state=42)
-
-        # Crear el modelo de regresión lineal
-        model = LinearRegression()
-
-        # Ajustar el modelo a los datos de entrenamiento
-        model.fit(X_train.values.reshape(-1, 1), y_train)
-
-        # Realizar predicciones en el conjunto de prueba
-        y_pred = model.predict(X_test.values.reshape(-1, 1))
-
-        # Calcular el error cuadrático medio en el conjunto de prueba
-        mse = mean_squared_error(y_test, y_pred)
-
-        print("Error cuadrático medio:", mse)
-
     def show(self):
         #analisis.dtypes()
         analisis.convert_categorical_to_numeric()
@@ -237,23 +212,20 @@ class AnalizarDatos:
         # Guardar el dataset modificado
         output_file = 'datos_modificados.csv'
         analisis.save_dataset(output_file)
-        #analisis.OperatingAirlines()
-        #analisis.MediaPasajeros()
-        #analisis.EliminarDuplicados()
-        #analisis.nuevo_csv()
-        #analisis.calculos_descriptivos()
-        #analisis.eliminar_nulos()
-        #analisis.correlacion()
+        analisis.OperatingAirlines()
+        analisis.MediaPasajeros()
+        analisis.EliminarDuplicados()
+        analisis.nuevo_csv()
+        analisis.calculos_descriptivos()
+        analisis.eliminar_nulos()
+        analisis.correlacion()
         analisis.remove_highly_correlated_columns()
         # comprobar que se han eliminado las columnas  con la correlacion 
-        #analisis.correlacion()
-        #analisis.modelo_regresion()
+        analisis.correlacion()
         output_file= "dataset_limpiado.csv"
         analisis.save_dataset(output_file)
 
 
-      
 # Ruta del DataFrame
 file_path = '/Users/mariagarcia/Documents/BigData_datos_aeropuerto/air_traffic_data.csv'
 analisis = AnalizarDatos(file_path)
-analisis.show()

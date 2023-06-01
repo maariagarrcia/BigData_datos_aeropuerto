@@ -1,16 +1,22 @@
+### I M P O R T S ###
 import dask.dataframe as dd
-from dask_ml.model_selection import train_test_split, GridSearchCV
+from dask_ml.model_selection import train_test_split
 from dask_ml.preprocessing import StandardScaler
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn import tree
+
 import matplotlib.pyplot as plt
 from colorama import Fore
 
+
+### C L A S S ###
 class RandomForestModel:
-    def __init__(self, data_path, random_state=42):
+    def __init__(self, data_path):
         self.data_path = data_path
-        self.random_forest = RandomForestRegressor(random_state=random_state)
+        self.random_forest = RandomForestRegressor(n_estimators=100, random_state=42)
+
 
     def load_data(self):
         df = dd.read_csv(self.data_path)
@@ -25,16 +31,14 @@ class RandomForestModel:
         self.y_train = y_train.compute()
         self.y_test = y_test.compute()
 
-    def train(self, param_grid):
-        grid_search = GridSearchCV(
-            estimator=self.random_forest,
-            param_grid=param_grid,
-            scoring='neg_mean_squared_error',
-            cv=5,
-            n_jobs=-1
-        )
-        grid_search.fit(self.X_train, self.y_train)
-        self.random_forest = grid_search.best_estimator_
+    def describe(self):
+        df = dd.read_csv(self.data_path)
+        description = df[['Month', 'Passenger Count']].describe().compute()
+        print(description)
+
+
+    def train(self):
+        self.random_forest.fit(self.X_train, self.y_train)
 
     def predict(self):
         y_pred = self.random_forest.predict(self.X_test)
@@ -44,9 +48,11 @@ class RandomForestModel:
         mse = mean_squared_error(self.y_test, y_pred)
         mae = mean_absolute_error(self.y_test, y_pred)
         r2 = r2_score(self.y_test, y_pred)
-        print(Fore.GREEN + "Mean Squared Error:" + Fore.WHITE, mse)
-        print(Fore.GREEN + "Mean Absolute Error:" + Fore.WHITE, mae)
-        print(Fore.GREEN + "R^2 Score:" + Fore.WHITE, r2)
+        print(Fore.GREEN + "Mean Squared Error:"+Fore.WHITE, mse)
+        print(Fore.GREEN + "Mean Absolute Error:"+Fore.WHITE, mae)
+        print(Fore.GREEN + "R^2 Score:"+Fore.WHITE, r2)
+
+
         return mse, mae, r2
 
     def visualize_tree(self, tree_index=0):
@@ -59,26 +65,13 @@ class RandomForestModel:
         for estimator in self.random_forest.estimators_:
             total_depth += estimator.tree_.max_depth
         average_depth = total_depth / len(self.random_forest.estimators_)
-        print(Fore.GREEN + "Average Tree Depth:" + Fore.WHITE, average_depth)
+        print(Fore.GREEN + "Average Tree Depth:"+Fore.WHITE, average_depth)
         return average_depth
 
-    def describe(self):
-        df = dd.read_csv(self.data_path)
-        description = df[['Month', 'Passenger Count']].describe().compute()
-        print(description)
-
-    def show(self):
-        self.describe()
+    def show_all(self):
         self.load_data()
-
-        # Especifica el rango de hiperparámetros a considerar
-        param_grid = {
-            'n_estimators': [100, 200, 300],
-            'max_depth': [None, 5, 10],
-            'min_samples_split': [2, 5, 10]
-        }
-
-        self.train(param_grid)
+        self.describe()
+        self.train()
         y_pred = self.predict()
         self.calculate_metrics(y_pred)
         self.get_average_depth()
@@ -87,4 +80,4 @@ class RandomForestModel:
 
 # Crear una instancia del modelo
 model = RandomForestModel('/Users/mariagarcia/Documents/BigData_datos_aeropuerto/dataset_limpiado.csv')
-model.show()
+

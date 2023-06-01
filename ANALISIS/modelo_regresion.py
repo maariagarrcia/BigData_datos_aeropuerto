@@ -1,3 +1,4 @@
+#### I M P O R T S ####
 from dask import dataframe as dd
 from colorama import Fore
 from matplotlib import pyplot as plt
@@ -10,7 +11,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, classification_report, confusion_matrix
 
 
-#from analisis_POO import *
+#### C L A S S ####
 
 class RegressionModel:
     def __init__(self, filename):
@@ -158,7 +159,7 @@ class RegressionModel:
         # Mostrar la matriz de confusión
         plt.show()
 
-    def modelo_regresion(self):
+    def show_modelo_regresion(self):
         self.load_data()
         self.prepare_data()
         self.train_model()
@@ -171,10 +172,8 @@ class RegressionModel:
         self.confusion_matrix()
 
 
-
 # Instanciar el objeto RegressionModel
-model = RegressionModel('/Users/mariagarcia/Documents/BigData_datos_aeropuerto/dataset_limpiado.csv')
-model.modelo_regresion()
+modelo = RegressionModel('/Users/mariagarcia/Documents/BigData_datos_aeropuerto/dataset_limpiado.csv')
 
 
 
