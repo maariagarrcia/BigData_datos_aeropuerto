@@ -26,7 +26,6 @@ mi_menu.addOption("Analisis de datos", limpieza)
 mi_menu.addOption("Modelo de regresion", regresion)
 mi_menu.addOption("Modelo de arboles", arboles)
 
-mi_menu.start()
 
 
 
