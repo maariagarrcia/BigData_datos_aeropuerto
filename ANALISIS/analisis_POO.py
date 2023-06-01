@@ -82,7 +82,7 @@ class AnalizarDatos:
         print(self.df['Operating Airline'].unique().compute())
         print()
 
-        #el gráfico de recuento muestra la cantidad de veces que aparece cada compañía operadora en el conjunto de datos. 
+        # el gráfico de recuento muestra la cantidad de veces que aparece cada compañía operadora en el conjunto de datos. 
         # en el eje x no va asalie el nombre de las compañias porque hemos convertido los datos categoricos a numericos
         # pero antes de la conversion se veia que la compañia que mas vuelos tenia era United Airlines - Pre 07/01/2013
         # Countplot de las compañías operadoras
@@ -170,7 +170,8 @@ class AnalizarDatos:
         self.df = self.df.fillna('null')
         print(self.df.isnull().sum().compute())
   
-    #Una vez esto haremos un análisis de la correlación cuyo resultado debe ser una matriz de correlación de datos que represente de qué manera están relacionadas las diferentes variables. Pa
+    #Una vez esto haremos un análisis de la correlación cuyo resultado debe ser una matriz de 
+    # correlación de datos que represente de qué manera están relacionadas las diferentes variables. 
     def correlacion(self):
         print(Fore.LIGHTMAGENTA_EX + "· MATRIZ DE CORRELACIÓN ·" + Fore.WHITE)
         correlation_matrix = self.df.corr().compute()
@@ -206,9 +207,8 @@ class AnalizarDatos:
         print(columns_to_remove)
 
     def show(self):
-        #analisis.dtypes()
+        analisis.dtypes()
         analisis.convert_categorical_to_numeric()
-
         # Guardar el dataset modificado
         output_file = 'datos_modificados.csv'
         analisis.save_dataset(output_file)

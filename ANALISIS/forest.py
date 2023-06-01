@@ -12,11 +12,11 @@ from colorama import Fore
 
 
 ### C L A S S ###
+
 class RandomForestModel:
     def __init__(self, data_path):
         self.data_path = data_path
         self.random_forest = RandomForestRegressor(n_estimators=100, random_state=42)
-
 
     def load_data(self):
         df = dd.read_csv(self.data_path)
@@ -36,7 +36,6 @@ class RandomForestModel:
         description = df[['Month', 'Passenger Count']].describe().compute()
         print(description)
 
-
     def train(self):
         self.random_forest.fit(self.X_train, self.y_train)
 
@@ -51,8 +50,6 @@ class RandomForestModel:
         print(Fore.GREEN + "Mean Squared Error:"+Fore.WHITE, mse)
         print(Fore.GREEN + "Mean Absolute Error:"+Fore.WHITE, mae)
         print(Fore.GREEN + "R^2 Score:"+Fore.WHITE, r2)
-
-
         return mse, mae, r2
 
     def visualize_tree(self, tree_index=0):
