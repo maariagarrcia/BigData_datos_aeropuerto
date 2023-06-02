@@ -205,6 +205,10 @@ class AnalizarDatos:
         # comprobamos que se han eliminado las columnas
         print(Fore.LIGHTMAGENTA_EX + "· COLUMNAS ELIMINADAS ·" + Fore.WHITE)
         print(columns_to_remove)
+    
+    def bitcoinToEuros(self, bitcoin_amount, bitcoin_value_euros):
+        euros_value = bitcoin_amount * bitcoin_value_euros
+        return euros_value
 
     def show(self):
         analisis.dtypes()
@@ -229,3 +233,15 @@ class AnalizarDatos:
 # Ruta del DataFrame
 file_path = '/Users/mariagarcia/Documents/BigData_datos_aeropuerto/air_traffic_data.csv'
 analisis = AnalizarDatos(file_path)
+
+# Cálculo del valor de Bitcoin en euros
+bitcoin_amount = 0.5
+bitcoin_value_euros = 40000
+euros_value = analisis.bitcoinToEuros(bitcoin_amount, bitcoin_value_euros)
+print("El valor de Bitcoin en euros es:", euros_value)
+
+# Correlación del valor de Bitcoin en euros con los datos de tráfico aéreo
+if euros_value < 30000:
+    print("¡Alerta! El valor de Bitcoin está por debajo de 30,000€.")
+else:
+    print("El valor de Bitcoin está por encima de 30,000€.")
