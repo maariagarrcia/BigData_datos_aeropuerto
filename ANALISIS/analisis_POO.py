@@ -228,6 +228,7 @@ class AnalizarDatos:
         analisis.correlacion()
         output_file= "dataset_limpiado.csv"
         analisis.save_dataset(output_file)
+        
 
 class GestionNFT:
     def __init__(self):

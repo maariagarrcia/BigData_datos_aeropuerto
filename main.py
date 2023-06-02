@@ -26,9 +26,9 @@ def limpieza():
 
     # Correlación del valor de Bitcoin en euros con los datos de tráfico aéreo
     if euros_value < 30000:
-        print("¡Alerta! El valor de Bitcoin está por debajo de 30,000€.")
+        print("¡Alerta! El valor de Bitcoin está por debajo de 30000€.")
     else:
-        print("El valor de Bitcoin está por encima de 30,000€.")
+        print("El valor de Bitcoin está por encima de 30000€.")
 
 def regresion():
     modelo.show_modelo_regresion()
