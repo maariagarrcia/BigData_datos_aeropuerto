@@ -229,19 +229,32 @@ class AnalizarDatos:
         output_file= "dataset_limpiado.csv"
         analisis.save_dataset(output_file)
 
+class GestionNFT:
+    def __init__(self):
+        self.nfts = []
+
+    def comprar_nft(self, nft):
+        self.nfts.append(nft)
+        print("¡NFT comprado con éxito!")
+        print()
+
+    def vender_nft(self, nft):
+        if nft in self.nfts:
+            self.nfts.remove(nft)
+            print("¡NFT vendido con éxito!")
+        else:
+            print("No tienes este NFT para vender.")
+        print()
+
+    def mostrar_nfts(self):
+        if len(self.nfts) == 0:
+            print("No tienes NFTs.")
+        else:
+            print("Tus NFTs:")
+            for nft in self.nfts:
+                print(nft)
+        print()
 
 # Ruta del DataFrame
 file_path = '/Users/mariagarcia/Documents/BigData_datos_aeropuerto/air_traffic_data.csv'
 analisis = AnalizarDatos(file_path)
-
-# Cálculo del valor de Bitcoin en euros
-bitcoin_amount = 0.5
-bitcoin_value_euros = 40000
-euros_value = analisis.bitcoinToEuros(bitcoin_amount, bitcoin_value_euros)
-print("El valor de Bitcoin en euros es:", euros_value)
-
-# Correlación del valor de Bitcoin en euros con los datos de tráfico aéreo
-if euros_value < 30000:
-    print("¡Alerta! El valor de Bitcoin está por debajo de 30,000€.")
-else:
-    print("El valor de Bitcoin está por encima de 30,000€.")
